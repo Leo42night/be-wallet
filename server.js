@@ -61,10 +61,11 @@ app.post('/api/auth/google', async (req, res) => {
 });
 
 // Get user data by email
-app.get('/api/user/email/:email', async (req, res) => {
-  console.log("req.params : ", req.params);
+app.get('/api/user/email', async (req, res) => {
+  console.log("req.query : ", req.query);
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [req.params.email]);
+    const email = req.query.email;
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     console.log("result.rows : ", result.rows);
     if(result.rows.length === 0) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -76,10 +77,11 @@ app.get('/api/user/email/:email', async (req, res) => {
 });
 
 // Get user data by telp
-app.get('/api/user/telp/:telp', async (req, res) => {
-  console.log("req.params : ", req.params);
+app.get('/api/user/telp', async (req, res) => {
+  console.log("req.query : ", req.query);
   try {
-    const result = await pool.query('SELECT * FROM users WHERE telp = $1', [req.params.telp]);
+    const telp = req.query.telp;
+    const result = await pool.query('SELECT * FROM users WHERE telp = $1', [telp]);
     console.log("result.rows : ", result.rows);
     res.json({ success: true, user: result.rows[0] });
   } catch (error) {
@@ -88,10 +90,10 @@ app.get('/api/user/telp/:telp', async (req, res) => {
 });
 
 // Top up balance
-app.put('/api/user/:email/balance', async (req, res) => {
-  console.log("req.params : ", req.params);
-  console.log("req.body : ", req.body);
+app.put('/api/user/balance/email', async (req, res) => {
+  console.log("req.query : ", req.query);
   try {
+    const email = req.query.email;
     const result = await pool.query('UPDATE users SET balance = balance + $1 WHERE email = $2 RETURNING *', [req.body.amount, req.params.email]);
     console.log("result.rows : ", result.rows);
     res.json({ success: true, user: result.rows[0] });
@@ -134,10 +136,11 @@ app.get('/api/transaction/history/:id', async (req, res) => {
 });
 
 // otp number & token
-app.get('/api/otps/:telp', async (req, res) => {
-  console.log("req.params : ", req.params);
+app.get('/api/otps/telp', async (req, res) => {
+  console.log("req.query : ", req.query);
   try {
-    const result = await pool.query('SELECT * FROM otps WHERE telp = $1', [req.params.telp]);
+    const telp = req.query.telp;
+    const result = await pool.query('SELECT * FROM otps WHERE telp = $1', [telp]);
     console.log("result.rows : ", result.rows);
     res.json({ success: true, otp: result.rows[0] });
   } catch (error) {
