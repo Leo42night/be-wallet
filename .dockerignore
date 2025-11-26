@@ -1,0 +1,6 @@
+node_modules
+.git
+npm-debug.log
+db_postgres.sql
+README.md
+template.env
