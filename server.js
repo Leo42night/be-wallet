@@ -10,7 +10,7 @@ app.use(express.json());
 const port = process.env.PORT || 8080;
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'cloudsql/main-478815:asia-southeast1:e-wallet',
+  host: process.env.DB_HOST || '/cloudsql/main-478815:asia-southeast1:e-wallet',
   user: 'postgres',
   password: process.env.DB_PASSWORD,
   database: 'postgres',
@@ -28,6 +28,10 @@ pool.connect((err, client, release) => {
     console.log("✅ Berhasil terhubung ke PostgreSQL!", process.env.DB_NAME);
     release();
   }
+});
+
+app.get('/', async (req, res) => {
+  res.send(`Hello World! ${process.env.DB_NAME}`);
 });
 
 // Login/Register endpoint
