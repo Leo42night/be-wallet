@@ -14,10 +14,7 @@ const pool = new Pool({
   user: 'postgres',
   password: process.env.DB_PASSWORD,
   database: 'postgres',
-  port: 5432,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  port: 5432
 });
 
 // TEST KONEKSI
