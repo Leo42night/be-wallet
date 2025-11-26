@@ -7,6 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const port = process.env.PORT || 8080;
+
 const pool = new Pool({
   host: process.env.DB_HOST,
   user: 'postgres',
@@ -139,6 +141,6 @@ app.get('/api/otps/:telp', async (req, res) => {
   }
 });
 
-app.listen(3000, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:3000");
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });
