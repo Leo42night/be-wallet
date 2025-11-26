@@ -57,6 +57,19 @@ app.post('/api/auth/google', async (req, res) => {
   }
 });
 
+// Get user data by id
+app.get('/api/user/id/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+    if(result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+    res.json({ success: true, user: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Get user data by email
 app.get('/api/user/email', async (req, res) => {
   console.log("req.query : ", req.query);
