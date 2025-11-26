@@ -10,7 +10,7 @@ app.use(express.json());
 const port = process.env.PORT || 8080;
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST || 'cloudsql/main-478815:asia-southeast1:e-wallet',
   user: 'postgres',
   password: process.env.DB_PASSWORD,
   database: 'postgres',
