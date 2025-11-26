@@ -122,17 +122,59 @@ app.post('/api/transaction/transfer', async (req, res) => {
 
 // get transaction histories
 app.get('/api/transaction/history/:id', async (req, res) => {
-  console.log("req.params : ", req.params);
+  console.log("req.params transactions : ", req.params);
   try {
-    const result = await pool.query('SELECT * FROM transactions WHERE from_id = $1 OR to_id = $2', [req.params.id, req.params.id]);
+    const result = await pool.query(
+      `
+      SELECT 
+        t.id,
+        t.from_id,
+        t.to_id,
+        t.amount,
+        t.message,
+        t.created_at,
+
+        -- Ambil photo_url dari user yang BUKAN pengirim request
+        CASE 
+          WHEN t.from_id = $1 THEN u2.photo_url
+          ELSE u1.photo_url
+        END AS photo_url,
+
+        -- Ambil email dari user yang BUKAN pengirim request
+        CASE 
+          WHEN t.from_id = $1 THEN u2.email
+          ELSE u1.email
+        END AS email
+
+      FROM transactions t
+      JOIN users u1 ON u1.id = t.from_id
+      JOIN users u2 ON u2.id = t.to_id
+      WHERE t.from_id = $1 OR t.to_id = $1
+      ORDER BY t.created_at DESC
+      `,
+      [req.params.id]
+    );
+    // amount otomatis parse dari 'numeric' ke 'number'
     console.log("result.rows : ", result.rows);
     res.json({ success: true, transactions: result.rows });
+  } catch (error) {
+    console.log("error : ", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/otps/telp', async (req, res) => {
+  console.log("req.body : ", req.body);
+  try {
+    const result = await pool.query('INSERT INTO otps (telp, code) VALUES ($1, $2) RETURNING *', [req.body.telp, req.body.code]);
+    console.log("result.rows : ", result.rows);
+    res.json({ success: true, otp: result.rows[0] });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// otp number & token
+// get otp number & token
 app.get('/api/otps/telp', async (req, res) => {
   console.log("req.query : ", req.query);
   try {
